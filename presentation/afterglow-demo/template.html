@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afterglow · Behind the glow</title>
+<meta name="description" content="Behind the scenes of Afterglow, a personal companion that turns the people you shared a room with into real relationships. Fictional data, dated evidence, proposed metrics.">
+<meta property="og:title" content="Afterglow · Behind the glow">
+<meta property="og:description" content="The product decisions, design system and verified checks behind a more thoughtful event follow-up.">
+<meta property="og:type" content="website">
+<style>
+/* ===== Afterglow design system runtime CSS (extracted from artifacts/afterglow-design-system/src/index.css by build.mjs) ===== */
+/*__DS_CSS__*/
+
+/* ===== Behind the glow layout (composes the tokens above only) ===== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { min-height: 100dvh; }
+h1, h2, h3, p, ol, ul, dl, dd, figure { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+.wrap { max-width: 1152px; margin: 0 auto; padding: 0 var(--space-5); }
+.muted { color: var(--ink-muted); }
+.pop-ink { color: var(--pop-ink); }
+.stack { display: flex; flex-direction: column; gap: var(--space-3); }
+.row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.grid { display: grid; gap: var(--space-4); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+a.ag-btn { text-decoration: none; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.skip { position: absolute; left: var(--space-4); top: calc(-1 * var(--space-12)); z-index: 30; }
+.skip:focus { top: var(--space-4); }
+
+/* top bar */
+.bar { position: sticky; top: 0; z-index: 20; background: var(--glass); border-bottom: 1px solid var(--line); -webkit-backdrop-filter: blur(var(--blur-glass)); backdrop-filter: blur(var(--blur-glass)); }
+.bar__in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-5); max-width: 1152px; margin: 0 auto; }
+.mark { display: flex; align-items: center; gap: var(--space-2); text-decoration: none; color: var(--ink); border-radius: var(--radius-pill); }
+.mark__dot { width: 32px; height: 32px; border-radius: var(--radius-pill); background: var(--pop); color: var(--on-bright); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; box-shadow: var(--glow-pop); }
+.mark__name { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.015em; }
+.nav { display: flex; order: 3; width: 100%; overflow-x: auto; white-space: nowrap; gap: var(--space-1); }
+.nav a { color: var(--ink-muted); text-decoration: none; padding: var(--space-2) var(--space-3); border-radius: var(--radius-pill); transition: background-color var(--ag-duration-select) var(--ag-ease-out), color var(--ag-duration-select) var(--ag-ease-out); }
+.nav a:hover, .nav a[aria-current="true"] { color: var(--ink); background: var(--glass-strong); }
+.scene { display: inline-flex; padding: var(--space-1); gap: var(--space-1); border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--glass); }
+.scene button { font: 600 14px/20px var(--font-body); color: var(--ink-muted); background: transparent; border: 0; border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); cursor: pointer; transition: background-color var(--ag-duration-select) var(--ag-ease-out); }
+.scene button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+/* sections */
+section { padding: var(--space-12) 0; scroll-margin-top: calc(var(--space-12) * 3); }
+.kicker { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
+.kicker__n { font-family: var(--font-display); font-weight: 800; color: var(--pop-ink); }
+.head { margin-bottom: var(--space-8); max-width: 720px; }
+.head p { margin-top: var(--space-3); }
+.tilt-l { transform: rotate(-3deg); } .tilt-r { transform: rotate(3deg); }
+
+/* hero */
+.hero { padding-top: var(--space-12); display: grid; gap: var(--space-8); align-items: center; }
+.hero__flourish { color: var(--pop-ink); }
+.hero__lede { max-width: 560px; }
+.ticket { position: relative; }
+.ticket .ag-event { width: 100%; max-width: 360px; margin: 0 auto; }
+.ticket__stamp { position: absolute; left: 0; bottom: var(--space-6); }
+.glowline { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--glass); font-size: 14px; font-weight: 600; }
+.chip__dot { width: 8px; height: 8px; border-radius: var(--radius-pill); }
+.d-pop { background: var(--pop); } .d-zap { background: var(--zap); } .d-sun { background: var(--sun); } .d-sky { background: var(--sky); } .d-grape { background: var(--grape); }
+
+/* truth ladder */
+.ladder { display: grid; gap: var(--space-3); }
+.rung { display: flex; gap: var(--space-4); align-items: center; padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); }
+.rung__icon { width: 40px; height: 40px; flex-shrink: 0; }
+.rung strong { font-family: var(--font-display); font-size: 22px; display: block; }
+.ne { font-family: var(--font-accent); font-style: italic; font-size: 28px; color: var(--pop-ink); text-align: center; }
+
+/* flow stepper */
+.steps { display: flex; gap: var(--space-2); overflow-x: auto; padding-bottom: var(--space-2); scroll-snap-type: x mandatory; }
+.step { scroll-snap-align: start; flex: 0 0 auto; display: flex; align-items: center; gap: var(--space-2); font: 600 14px/20px var(--font-body); color: var(--ink); background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius-pill); padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2); cursor: pointer; transition: transform var(--ag-duration-select) var(--ag-ease-bounce), background-color var(--ag-duration-select) var(--ag-ease-out); }
+.step__n { width: 28px; height: 28px; border-radius: var(--radius-pill); display: grid; place-items: center; background: var(--glass-strong); font-weight: 700; font-size: 12px; }
+.step[aria-selected="true"] { background: var(--ink); color: var(--bg); transform: translateY(-2px); }
+.step[aria-selected="true"] .step__n { background: var(--pop); color: var(--on-bright); }
+.stage { display: grid; gap: var(--space-5); margin-top: var(--space-4); }
+.stage__art { min-height: 240px; display: grid; place-items: center; border-radius: var(--radius-xl); position: relative; overflow: hidden; }
+.stage__art svg { width: 100%; max-width: 320px; height: auto; }
+.enter { animation: enter var(--ag-duration-enter) var(--ag-ease-out); }
+@keyframes enter { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+.guard { display: flex; gap: var(--space-2); align-items: flex-start; }
+.guard__x { width: 20px; height: 20px; flex-shrink: 0; border-radius: var(--radius-pill); background: var(--glass-strong); display: grid; place-items: center; font-weight: 800; font-size: 12px; }
+
+/* builder notes */
+.notes { display: grid; gap: var(--space-4); }
+.pin { position: relative; }
+.pin .ag-sticker { position: absolute; top: calc(-1 * var(--space-3)); right: var(--space-4); }
+.pin__fig { height: 96px; margin-bottom: var(--space-3); border-radius: var(--radius-md); background: var(--glass); border: 1px dashed var(--line); display: grid; place-items: center; }
+
+/* design center */
+.swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-2); }
+.sw { aspect-ratio: 1; border-radius: var(--radius-lg); display: flex; align-items: flex-end; padding: var(--space-2); color: var(--on-bright); font-size: 12px; font-weight: 700; }
+.sw--pop { background: var(--pop); box-shadow: var(--glow-pop); } .sw--zap { background: var(--zap); box-shadow: var(--glow-zap); } .sw--sun { background: var(--sun); } .sw--sky { background: var(--sky); } .sw--grape { background: var(--grape); }
+.surfaces { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-top: var(--space-2); }
+.surf { border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-3); font-size: 12px; font-weight: 600; }
+.radii { display: flex; gap: var(--space-3); align-items: flex-end; flex-wrap: wrap; }
+.rad { width: 48px; height: 48px; border: 2px solid var(--ink); background: var(--glass); }
+.space { display: flex; align-items: flex-end; gap: var(--space-2); }
+.space span { display: block; width: 12px; background: var(--pop); border-radius: var(--radius-sm); }
+.tag { align-self: flex-start; font-size: 12px; line-height: 16px; letter-spacing: 0.02em; color: var(--ink-muted); border: 1px dashed var(--line); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); }
+.dc { display: grid; gap: var(--space-4); }
+.specimen { display: flex; flex-direction: column; gap: var(--space-3); }
+
+/* evidence */
+.ev { display: grid; gap: var(--space-4); }
+.ev__big { font-family: var(--font-display); font-weight: 800; font-size: 56px; line-height: 1; font-variant-numeric: tabular-nums; }
+.ev code { font-family: var(--app-font-mono); font-size: 12px; word-break: break-all; }
+.when { font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
+.honest { display: grid; gap: var(--space-2); }
+.honest li { display: flex; gap: var(--space-2); align-items: flex-start; }
+
+/* metrics */
+.metric { display: flex; flex-direction: column; gap: var(--space-3); min-height: 100%; }
+.metric__n { font-family: var(--font-accent); font-style: italic; font-size: 48px; line-height: 1; }
+
+/* next */
+.road { display: grid; gap: var(--space-4); counter-reset: r; }
+.road li { position: relative; }
+
+/* share */
+.share { display: grid; gap: var(--space-4); }
+.url { font-family: var(--font-display); font-weight: 700; font-size: 20px; word-break: break-all; }
+.lock { display: flex; gap: var(--space-3); align-items: flex-start; border: 1px solid var(--line); background: var(--glass-strong); border-radius: var(--radius-md); padding: var(--space-4); }
+.lock svg { flex-shrink: 0; }
+.check { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3) var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--glass); cursor: pointer; transition: background-color var(--ag-duration-select) var(--ag-ease-out); }
+.check:hover { background: var(--glass-strong); }
+.check input { width: 20px; height: 20px; accent-color: var(--pop); flex-shrink: 0; }
+.check:has(input:checked) span { text-decoration: line-through; color: var(--ink-muted); }
+.prog { height: 8px; border-radius: var(--radius-pill); background: var(--glass-strong); overflow: hidden; }
+.prog__fill { height: 100%; background: var(--zap); transform-origin: left; transform: scaleX(0); transition: transform var(--ag-duration-enter) var(--ag-ease-out); }
+footer { padding: var(--space-8) 0 var(--space-12); border-top: 1px solid var(--line); }
+
+/* reveal */
+.reveal { opacity: 1; }
+.reveal.is-in { animation: enter var(--ag-duration-enter) var(--ag-ease-out); }
+
+@media (min-width: 768px) {
+  .wrap { padding: 0 var(--space-8); }
+  .nav { order: initial; width: auto; }
+  section { scroll-margin-top: calc(var(--space-12) * 2); }
+  .hero { grid-template-columns: 3fr 2fr; padding-top: var(--space-12); }
+  .ladder { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; }
+  .rung { flex-direction: column; text-align: center; }
+  .stage { grid-template-columns: 1fr 1fr; align-items: center; }
+  .notes { grid-template-columns: repeat(3, 1fr); }
+  .dc { grid-template-columns: 1fr 1fr; }
+  .ev { grid-template-columns: repeat(3, 1fr); }
+  .c3 { grid-template-columns: repeat(3, 1fr); }
+  .road { grid-template-columns: repeat(3, 1fr); }
+  .share { grid-template-columns: 3fr 2fr; }
+  .span2 { grid-column: span 2; }
+  .full { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .enter, .reveal.is-in { animation: none; }
+  .tilt-l, .tilt-r { transform: none; }
+  .step[aria-selected="true"] { transform: none; }
+  .prog__fill { transition: none; }
+}
+</style>
+</head>
+<body class="ag-root ag-root--aura">
+<a class="ag-btn ag-btn--primary ag-btn--sm skip" href="#story">Skip to the story</a>
+
+<header class="bar">
+  <div class="bar__in">
+    <a class="mark" href="#top" aria-label="Afterglow, back to top"><span class="mark__dot" aria-hidden="true">A</span><span class="mark__name">Afterglow</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#story">Story</a><a href="#notes">Builder notes</a><a href="#design">Design</a><a href="#evidence">Evidence</a><a href="#share">Share</a>
+    </nav>
+    <div class="scene" role="group" aria-label="Theme">
+      <button type="button" data-scene="dark" aria-pressed="true" data-testid="button-theme-night">Night out</button>
+      <button type="button" data-scene="light" aria-pressed="false" data-testid="button-theme-day">Day party</button>
+    </div>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <noscript><p class="ag-glass">JavaScript is needed for the interactive examples, dated evidence and sharing controls. The story below remains readable.</p></noscript>
+  <!-- HERO -->
+  <div class="hero" style="padding-bottom: var(--space-12)">
+    <div class="stack" style="gap: var(--space-5)">
+      <span class="ag-sticker ag-sticker--zap tilt-l" style="align-self: flex-start">Behind the glow</span>
+      <h1 class="type-display-xl">The party ends.<br><span class="type-flourish hero__flourish">The people shouldn't.</span></h1>
+      <p class="type-body-lg muted hero__lede">Afterglow is a personal companion for event-goers. It helps the people you actually shared a room with become real relationships, not a forgotten guest list.</p>
+      <div class="glowline" aria-label="What it is">
+        <span class="chip"><span class="chip__dot d-pop" aria-hidden="true"></span>Outreach-first personal CRM</span>
+        <span class="chip"><span class="chip__dot d-zap" aria-hidden="true"></span>Fictional data</span>
+        <span class="chip"><span class="chip__dot d-sky" aria-hidden="true"></span>Nothing is sent</span>
+      </div>
+      <div class="row" style="gap: var(--space-3)">
+        <a class="ag-btn ag-btn--primary" href="#story" data-testid="link-start-story">See how it works</a>
+        <a class="ag-btn ag-btn--secondary" href="#share" data-testid="link-jump-share">Share it</a>
+      </div>
+    </div>
+    <div class="ticket" aria-label="Fictional event card">
+      <article class="ag-event">
+        <div class="ag-event__poster ag-event__poster--grape">
+          <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="44" fill="none" stroke="var(--on-bright)" stroke-width="4"/>
+            <circle cx="60" cy="60" r="26" fill="var(--sun)" stroke="var(--on-bright)" stroke-width="4"/>
+            <path d="M60 6v12M60 102v12M6 60h12M102 60h12M22 22l8 8M90 90l8 8M98 22l-8 8M30 90l-8 8" stroke="var(--on-bright)" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+          <span class="ag-sticker ag-sticker--zap">Fictional</span>
+        </div>
+        <div class="ag-event__body">
+          <h2 class="ag-event__title">Rooftop founders mixer</h2>
+          <p class="ag-event__meta">Tue, Nov 3 · 7:00 PM</p>
+          <p class="ag-event__host">Hosted by <strong>Demo host</strong></p>
+          <div class="ag-avs ag-avs--sm" role="img" aria-label="Fictional attendees Maya Rowan, Theo Park, Ines Alvarez and others">
+            <span class="ag-av ag-av--pop">MR</span><span class="ag-av ag-av--zap">TP</span><span class="ag-av ag-av--sun">IA</span><span class="ag-av ag-av--sky">SO</span>
+            <span class="ag-avs__cap">and the room</span>
+          </div>
+        </div>
+      </article>
+      <span class="ag-sticker ag-sticker--pop ticket__stamp tilt-r">Then what?</span>
+    </div>
+  </div>
+
+  <!-- 01 THE TRUTH LADDER -->
+  <section id="story" aria-labelledby="t-ladder">
+    <div class="head reveal">
+      <div class="kicker"><span class="kicker__n">01</span><span class="type-label muted">The rule of the night</span></div>
+      <h2 id="t-ladder" class="type-display-lg">Signing up is not showing up. Showing up is not meeting.</h2>
+    </div>
+    <div class="ladder reveal">
+      <div class="rung ag-glass">
+        <svg class="rung__icon" viewBox="0 0 40 40" aria-hidden="true"><rect x="6" y="4" width="28" height="32" rx="6" fill="none" stroke="var(--grape)" stroke-width="3"/><path d="M12 14h16M12 21h16M12 28h9" stroke="var(--grape)" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><strong>Registered</strong><span class="type-caption muted">Intent. Not evidence.</span></div>
+      </div>
+      <span class="ne" aria-label="is not">≠</span>
+      <div class="rung ag-glass">
+        <svg class="rung__icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="none" stroke="var(--sky)" stroke-width="3"/><path d="M13 20l5 5 9-10" fill="none" stroke="var(--sky)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><strong>Checked in</strong><span class="type-caption muted">Shared presence only.</span></div>
+      </div>
+      <span class="ne" aria-label="is not">≠</span>
+      <div class="rung ag-block ag-block--zap">
+        <svg class="rung__icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="14" cy="16" r="7" fill="none" stroke="var(--on-bright)" stroke-width="3"/><circle cx="27" cy="16" r="7" fill="none" stroke="var(--on-bright)" stroke-width="3"/><path d="M6 34c2-6 14-6 16 0M19 34c2-6 14-6 16 0" fill="none" stroke="var(--on-bright)" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><strong>Met</strong><p class="type-caption">Only when you say so.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 FLOW STEPPER -->
+  <section aria-labelledby="t-flow">
+    <div class="head reveal">
+      <div class="kicker"><span class="kicker__n">02</span><span class="type-label muted">One night, five moves</span></div>
+      <h2 id="t-flow" class="type-display-lg">From guest list to the next hello.</h2>
+    </div>
+    <div class="reveal">
+      <div class="steps" role="tablist" aria-label="Afterglow flow" id="steps"></div>
+      <div class="stage ag-glass" role="tabpanel" id="stage" tabindex="0" aria-live="polite"></div>
+      <p class="type-caption muted" style="margin-top: var(--space-3)">Use arrow keys to move between steps.</p>
+    </div>
+  </section>
+
+  <!-- 03 BUILDER NOTES -->
+  <section id="notes" aria-labelledby="t-notes">
+    <div class="head reveal">
+      <div class="kicker"><span class="kicker__n">03</span><span class="type-label muted">Builder notes</span></div>
+      <h2 id="t-notes" class="type-display-lg">Decisions taped to the wall.</h2>
+    </div>
+    <ul class="notes">
+      <li class="pin ag-glass reveal">
+        <span class="ag-sticker ag-sticker--sun tilt-r">Trust</span>
+        <div class="pin__fig" aria-hidden="true"><svg width="160" height="56" viewBox="0 0 160 56"><rect x="4" y="12" width="44" height="32" rx="10" fill="var(--grape)"/><rect x="58" y="12" width="44" height="32" rx="10" fill="var(--sky)"/><rect x="112" y="12" width="44" height="32" rx="10" fill="var(--zap)"/><path d="M76 22l8 6-8 6" fill="none" stroke="var(--on-bright)" stroke-width="3"/><path d="M126 28l5 5 10-10" fill="none" stroke="var(--on-bright)" stroke-width="3"/></svg></div>
+        <h3>Three states, never merged</h3>
+        <p>Data model keeps registration, check-in and meeting apart. No inferred meetings.</p>
+      </li>
+      <li class="pin ag-glass reveal">
+        <span class="ag-sticker ag-sticker--sky tilt-l">Safety</span>
+        <div class="pin__fig" aria-hidden="true"><svg width="160" height="56" viewBox="0 0 160 56"><rect x="20" y="8" width="120" height="40" rx="20" fill="none" stroke="var(--ink-muted)" stroke-width="3" stroke-dasharray="6 6"/><circle cx="80" cy="28" r="10" fill="var(--pop)"/></svg></div>
+        <h3>Synthetic by design</h3>
+        <p>Simulated Luma or one bundled CSV. Same fictional scenario, stable IDs. No open uploads.</p>
+      </li>
+      <li class="pin ag-glass reveal">
+        <span class="ag-sticker ag-sticker--pop tilt-r">Voice</span>
+        <div class="pin__fig" aria-hidden="true"><svg width="160" height="56" viewBox="0 0 160 56"><rect x="8" y="8" width="144" height="40" rx="12" fill="var(--glass-strong)" stroke="var(--line)"/><path d="M22 22h80M22 34h56" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><rect x="108" y="28" width="3" height="12" fill="var(--pop)"/></svg></div>
+        <h3>Templates, not AI</h3>
+        <p>Drafts come from your notes and shared events. You edit. Nothing sends.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 04 DESIGN CENTER -->
+  <section id="design" aria-labelledby="t-design">
+    <div class="head reveal">
+      <div class="kicker"><span class="kicker__n">04</span><span class="type-label muted">Design center</span></div>
+      <h2 id="t-design" class="type-display-lg">Feels like an event app. Looks like Afterglow.</h2>
+      <p class="type-body muted">Familiar event-app patterns: posters, RSVPs, who's going. The identity is the user-uploaded, independent Afterglow system, not copied from Luma. Flip <strong>Night out / Day party</strong> above to see both themes.</p>
+    </div>
+    <div class="dc">
+      <div class="ag-glass specimen reveal">
+        <span class="tag">Color · source tokens</span>
+        <div class="swatches"><div class="sw sw--pop">pop</div><div class="sw sw--zap">zap</div><div class="sw sw--sun">sun</div><div class="sw sw--sky">sky</div><div class="sw sw--grape">grape</div></div>
+        <div class="surfaces">
+          <div class="surf" style="background: var(--bg)">bg</div>
+          <div class="surf" style="background: var(--glass)">glass</div>
+          <div class="surf" style="background: var(--bg-raised)">raised</div>
+        </div>
+        <p class="type-caption muted">Neon fills always carry dark on-bright ink.</p>
+      </div>
+      <div class="ag-glass specimen reveal">
+        <span class="tag">Type · three voices</span>
+        <p class="type-title">Bricolage for the headline</p>
+        <p class="type-body">DM Sans for everything you read.</p>
+        <p class="type-flourish pop-ink">Instrument for the glow.</p>
+        <p class="type-caption muted">Offline here: system fallbacks from the same stacks.</p>
+      </div>
+      <div class="ag-glass specimen reveal">
+        <span class="tag">Shape and rhythm</span>
+        <div class="radii" aria-label="Radius scale small to pill">
+          <div class="rad" style="border-radius: var(--radius-sm)"></div><div class="rad" style="border-radius: var(--radius-md)"></div><div class="rad" style="border-radius: var(--radius-lg)"></div><div class="rad" style="border-radius: var(--radius-xl)"></div><div class="rad" style="border-radius: var(--radius-pill); width: 96px"></div>
+        </div>
+        <div class="space" aria-label="Spacing scale">
+          <span style="height: var(--space-1)"></span><span style="height: var(--space-2)"></span><span style="height: var(--space-3)"></span><span style="height: var(--space-4)"></span><span style="height: var(--space-5)"></span><span style="height: var(--space-6)"></span><span style="height: var(--space-8)"></span><span style="height: var(--space-12)"></span>
+        </div>
+        <p class="type-caption muted">Pill controls, 3px focus rings, bouncy press, calm under reduced motion.</p>
+      </div>
+      <div class="ag-glass specimen reveal">
+        <span class="tag">Components · static HTML with source CSS</span>
+        <div class="row"><button type="button" class="ag-btn ag-btn--primary ag-btn--sm" tabindex="-1" aria-hidden="true">Primary</button><button type="button" class="ag-btn ag-btn--zap ag-btn--sm" tabindex="-1" aria-hidden="true">Zap</button><button type="button" class="ag-btn ag-btn--secondary ag-btn--sm" tabindex="-1" aria-hidden="true">Secondary</button></div>
+        <div class="ag-rsvp" role="radiogroup" aria-label="Try the RSVP picker, local only" id="rsvp">
+          <button type="button" role="radio" aria-checked="false" class="ag-rsvp__opt ag-rsvp__opt--going" data-id="going" data-testid="radio-rsvp-going">Going</button>
+          <button type="button" role="radio" aria-checked="false" class="ag-rsvp__opt ag-rsvp__opt--maybe" data-id="maybe" data-testid="radio-rsvp-maybe">Maybe</button>
+          <button type="button" role="radio" aria-checked="false" class="ag-rsvp__opt ag-rsvp__opt--cant" data-id="cant" data-testid="radio-rsvp-cant">Can't go</button>
+        </div>
+        <div class="ag-field">
+          <label class="ag-field__label" for="sampleNote">TextField</label>
+          <input class="ag-field__input" id="sampleNote" aria-describedby="sampleHint" placeholder="Talked about climbing gyms" data-testid="input-sample-note">
+          <span class="ag-field__hint" id="sampleHint">Local only. Nothing is saved or sent.</span>
+        </div>
+        <div class="row"><span class="ag-sticker ag-sticker--sun">Sticker</span><span class="ag-sticker ag-sticker--grape">Glass</span><span class="ag-sticker ag-sticker--sky">Avatars</span></div>
+      </div>
+      <p class="type-caption muted full reveal">Seven source families (Button, RsvpPicker, GlassCard, EventCard, AvatarStack, Sticker, TextField) ship as typed React in the live app. Specimens here are static markup using the same CSS, inlined at export.</p>
+    </div>
+  </section>
+
+  <!-- 05 EVIDENCE -->
+  <section id="evidence" aria-labelledby="t-ev">
+    <div class="head reveal">
+      <div class="kicker"><span class="kicker__n">05</span><span class="type-label muted">Testing, honestly</span></div>
+      <h2 id="t-ev" class="type-display-lg">What passed, and when.</h2>
+      <p class="type-body muted">Dated snapshots of software checks. These are test counts, not user numbers.</p>
+    </div>
+    <div class="ev">
+      <div class="ag-glass ag-block ag-block--zap stack reveal" data-testid="card-evidence-api">
+        <p class="type-label">API tests</p>
+        <p class="ev__big" id="apiCount"></p>
+        <p class="when" id="apiWhen"></p>
+        <code id="apiCmd"></code>
+      </div>
+      <div class="ag-glass ag-block ag-block--sky stack reveal" data-testid="card-evidence-web">
+        <p class="type-label">Web app tests</p>
+        <p class="ev__big" id="webCount"></p>
+        <p class="when" id="webWhen"></p>
+        <code id="webCmd"></code>
+      </div>
+      <div class="ag-glass ag-block ag-block--grape stack reveal" data-testid="card-evidence-static">
+        <p class="type-label">Design-system static checks</p>
+        <p class="ev__big" id="staticStatus"></p>
+        <p class="when" id="staticWhen"></p>
+        <code id="staticCmd"></code>
+      </div>
+      <div class="ag-glass stack span2 reveal" data-testid="card-evidence-onboarding">
+        <h3>Onboarding, in a real browser</h3>
+        <p id="obSummary"></p>
+        <p class="type-caption"><strong style="color: var(--ink)">Limit:</strong> <span id="obLimit"></span></p>
+        <p class="when muted" id="obWhen"></p>
+      </div>
+      <div class="ag-glass stack reveal">
+        <h3>Not claimed</h3>
+        <ul class="honest type-caption muted">
+          <li><span class="guard__x" aria-hidden="true">–</span>Selected journeys, not every browser or user.</li>
+          <li><span class="guard__x" aria-hidden="true">–</span>No LLM eval: drafts are templates.</li>
+          <li><span class="guard__x" aria-hidden="true">–</span>No accessibility certification.</li>
+          <li><span class="guard__x" aria-hidden="true">–</span>Real reduced-motion CSS emulation unavailable.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 METRICS -->
+  <section aria-labelledby="t-m">
+    <div class="head reveal">
+      <div class="kicker"><span class="kicker__n">06</span><span class="type-label muted">Proposed metrics</span><span class="ag-sticker ag-sticker--sun tilt-r">Not collected</span></div>
+      <h2 id="t-m" class="type-display-lg">Three signals. Zero data yet.</h2>
+    </div>
+    <ol class="grid c3">
+      <li class="ag-glass metric reveal"><span class="metric__n pop-ink" aria-hidden="true">i.</span><h3>First useful follow-up</h3><p>A follow-up the user reviewed and saved.</p></li>
+      <li class="ag-glass metric reveal"><span class="metric__n pop-ink" aria-hidden="true">ii.</span><h3>Replies within 7 days</h3><p>Only replies the user confirms. Never draft counts.</p></li>
+      <li class="ag-glass metric reveal"><span class="metric__n pop-ink" aria-hidden="true">iii.</span><h3>Back for the next event</h3><p>The user returns when the next guest list lands.</p></li>
+    </ol>
+    <p class="type-caption muted" style="margin-top: var(--space-4)">Pilot first to learn baselines. No targets claimed.</p>
+  </section>
+
+  <!-- 07 NEXT -->
+  <section aria-labelledby="t-n">
+    <div class="head reveal">
+      <div class="kicker"><span class="kicker__n">07</span><span class="type-label muted">What's next</span></div>
+      <h2 id="t-n" class="type-display-lg">Hypotheses, not announcements.</h2>
+    </div>
+    <ol class="road">
+      <li class="ag-glass ag-block ag-block--pop ag-block--slab stack reveal"><span class="type-label">Now</span><h3>Fictional attendee pilot</h3><p>Try the demo flow with event-goers. Fictional data only.</p></li>
+      <li class="ag-glass stack reveal"><span class="type-label pop-ink">Before real data</span><h3>Auth, ownership, permitted imports</h3><p>Per-user accounts and allowed integrations first.</p></li>
+      <li class="ag-glass stack reveal"><span class="type-label pop-ink">To test</span><h3>Who pays, who partners</h3><p>Premium or organizer sponsorship. Open-source or platform pilots. None launched.</p></li>
+    </ol>
+  </section>
+
+  <!-- 08 SHARE AND TRACK -->
+  <section id="share" aria-labelledby="t-s">
+    <div class="head reveal">
+      <div class="kicker"><span class="kicker__n">08</span><span class="type-label muted">Share and track</span></div>
+      <h2 id="t-s" class="type-display-lg">Pass the glow on.</h2>
+    </div>
+    <div class="share">
+      <div class="ag-glass stack reveal" data-testid="card-share" style="gap: var(--space-4)">
+        <div class="row"><span class="type-label muted">Published app</span><span class="ag-sticker ag-sticker--sun" id="visibility" data-testid="status-share-visibility"></span></div>
+        <p class="url" id="shareUrl" data-testid="text-share-url"></p>
+        <div class="lock" role="note" data-testid="text-share-warning">
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3" fill="var(--sun)"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>
+          <p class="type-caption" style="color: var(--ink)" id="shareWarn"></p>
+        </div>
+        <div class="row">
+          <button type="button" class="ag-btn ag-btn--primary ag-btn--sm" id="copyUrl" data-testid="button-copy-share-url">Copy link</button>
+          <button type="button" class="ag-btn ag-btn--secondary ag-btn--sm" id="copyInvite" data-testid="button-copy-invite">Copy invite</button>
+          <a class="ag-btn ag-btn--ghost ag-btn--sm" id="intLink" target="_blank" rel="noopener noreferrer" data-testid="link-app-integrations">Open Integrations<span class="sr-only"> (opens in a new tab)</span></a>
+        </div>
+        <p class="type-caption muted" id="shareStatus" role="status" aria-live="polite" data-testid="status-copy-share"></p>
+      </div>
+      <div class="ag-glass stack reveal" data-testid="card-track">
+        <h3>Track your follow-ups</h3>
+        <p class="type-caption">In the app, you mark outcomes yourself. Here, a checklist kept only in this browser. Nothing leaves it.</p>
+        <div class="prog" aria-hidden="true"><div class="prog__fill" id="progFill"></div></div>
+        <p class="type-caption muted" id="progText" aria-live="polite"></p>
+        <div class="stack" id="checklist" style="gap: var(--space-2)"></div>
+        <button type="button" class="ag-btn ag-btn--ghost ag-btn--sm" id="clearChecks" style="align-self: flex-start" data-testid="button-clear-checklist">Clear checklist</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row" style="justify-content: space-between">
+    <span class="type-caption muted">Afterglow · fictional data · no messages sent · no analytics on this page</span>
+    <a class="ag-btn ag-btn--ghost ag-btn--sm" href="#top">Back to top</a>
+  </div>
+</footer>
+
+<textarea id="copyFallback" aria-hidden="true" tabindex="-1" readonly style="position: fixed; left: -9999px; top: 0; opacity: 0"></textarea>
+
+<script>
+(function () {
+  "use strict";
+  var EVIDENCE = /*__EVIDENCE__*/null;
+  var E = EVIDENCE || {};
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var pub = E.publishedApp || {};
+  var APP = pub.url.replace(/\/$/, "");
+  var day = function (s) { return s ? String(s).slice(0, 10) : "date not recorded"; };
+  var stamp = function (s) { if (!s) return "date not recorded"; var t = String(s); return t.length > 10 ? t.replace("T", " ").replace(/:\d\dZ$/, " UTC").replace(/Z$/, " UTC") : t; };
+
+  /* ---------- Theme ---------- */
+  var root = document.documentElement;
+  var sceneBtns = document.querySelectorAll("[data-scene]");
+  function setScene(s) {
+    root.classList.toggle("dark", s === "dark");
+    sceneBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-scene") === s)); });
+  }
+  sceneBtns.forEach(function (b) { b.addEventListener("click", function () { setScene(b.getAttribute("data-scene")); }); });
+
+  /* ---------- Flow stepper ---------- */
+  var ART = {
+    import: '<svg viewBox="0 0 320 200"><rect x="20" y="40" width="110" height="120" rx="20" fill="var(--grape)"/><text x="75" y="108" text-anchor="middle" font-family="var(--font-display)" font-weight="800" font-size="20" fill="var(--on-bright)">Luma sim</text><rect x="190" y="40" width="110" height="120" rx="20" fill="var(--sky)"/><text x="245" y="108" text-anchor="middle" font-family="var(--font-display)" font-weight="800" font-size="20" fill="var(--on-bright)">CSV</text><path d="M135 100h50" stroke="var(--ink-muted)" stroke-width="3" stroke-dasharray="6 6"/></svg>',
+    attend: '<svg viewBox="0 0 320 200"><g fill="var(--glass-strong)" stroke="var(--line)"><circle cx="60" cy="70" r="22"/><circle cx="120" cy="70" r="22"/><circle cx="180" cy="70" r="22"/><circle cx="240" cy="70" r="22"/></g><g fill="var(--zap)" stroke="var(--on-bright)" stroke-width="2"><circle cx="90" cy="135" r="22"/><circle cx="150" cy="135" r="22"/><circle cx="210" cy="135" r="22"/></g><path d="M82 135l6 6 10-12M142 135l6 6 10-12M202 135l6 6 10-12" fill="none" stroke="var(--on-bright)" stroke-width="3"/></svg>',
+    notes: '<svg viewBox="0 0 320 200"><rect x="40" y="30" width="240" height="140" rx="24" fill="var(--glass-strong)" stroke="var(--line)"/><circle cx="80" cy="72" r="18" fill="var(--pop)"/><path d="M110 66h120M110 82h80M64 116h190M64 136h140" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/></svg>',
+    draft: '<svg viewBox="0 0 320 200"><rect x="30" y="30" width="260" height="140" rx="24" fill="var(--glass-strong)" stroke="var(--line)"/><path d="M60 70h170M60 95h200M60 120h120" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/><rect x="186" y="110" width="4" height="22" fill="var(--pop)"/><rect x="200" y="140" width="70" height="20" rx="10" fill="var(--sun)"/></svg>',
+    track: '<svg viewBox="0 0 320 200"><rect x="40" y="40" width="240" height="44" rx="22" fill="var(--zap)"/><path d="M64 62l8 8 14-16" fill="none" stroke="var(--on-bright)" stroke-width="4"/><text x="104" y="68" font-family="var(--font-display)" font-weight="800" font-size="18" fill="var(--on-bright)">They replied</text><rect x="40" y="110" width="240" height="56" rx="24" fill="var(--grape)"/><text x="160" y="145" text-anchor="middle" font-family="var(--font-display)" font-weight="800" font-size="18" fill="var(--on-bright)">Next event</text></svg>'
+  };
+  var STEPS = [
+    { id: "import", tone: "grape", t: "Import", h: "Bring in the night", p: "Simulated Luma provider or the bundled synthetic CSV.", g: "No live Luma, LinkedIn, Google or Eventbrite. No open uploads." },
+    { id: "attend", tone: "zap", t: "Confirm", h: "Who was really there", p: "Check-ins become confirmed attendance. Registrations stay intent.", g: "Attendance never becomes a meeting by itself." },
+    { id: "notes", tone: "pop", t: "Review", h: "Your notes, one person at a time", p: "Add a debrief and confirm who you actually met.", g: "Only you mark someone as met." },
+    { id: "draft", tone: "sun", t: "Draft", h: "An editable template", p: "Grounded in shared events and your notes. You rewrite it.", g: "No AI. Nothing is sent." },
+    { id: "track", tone: "sky", t: "Track", h: "Outcome, then the next event", p: "Mark replies manually. Familiar faces surface on the next guest list.", g: "Outcomes are what you record, not inferred." }
+  ];
+  var cur = 0, stepsEl = $("steps"), stage = $("stage"), tabs = [];
+  STEPS.forEach(function (s, i) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "step"; b.id = "tab-" + s.id;
+    b.setAttribute("role", "tab"); b.setAttribute("aria-controls", "stage"); b.setAttribute("data-testid", "tab-flow-" + s.id);
+    b.innerHTML = '<span class="step__n">' + (i + 1) + "</span>" + s.t;
+    b.addEventListener("click", function () { show(i, false); });
+    b.addEventListener("keydown", function (e) {
+      var n = null;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") n = (cur + 1) % STEPS.length;
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") n = (cur - 1 + STEPS.length) % STEPS.length;
+      if (e.key === "Home") n = 0; if (e.key === "End") n = STEPS.length - 1;
+      if (n !== null) { e.preventDefault(); show(n, true); }
+    });
+    stepsEl.appendChild(b); tabs.push(b);
+  });
+  function show(i, focus) {
+    cur = i; var s = STEPS[i];
+    tabs.forEach(function (t, k) { t.setAttribute("aria-selected", String(k === i)); t.tabIndex = k === i ? 0 : -1; });
+    stage.setAttribute("aria-labelledby", "tab-" + s.id);
+    stage.innerHTML =
+      '<div class="stage__art ag-block ag-block--' + s.tone + ' enter" aria-hidden="true">' + ART[s.id] + "</div>" +
+      '<div class="stack enter" style="gap: var(--space-4)"><span class="type-label pop-ink">Step ' + (i + 1) + " of " + STEPS.length + '</span><h3 class="type-title">' + s.h + '</h3><p class="type-body-lg">' + s.p + '</p><p class="guard type-caption"><span class="guard__x" aria-hidden="true">!</span><span>' + s.g + "</span></p>" +
+      '<div class="row"><button type="button" class="ag-btn ag-btn--secondary ag-btn--sm" id="stPrev"' + (i === 0 ? " disabled" : "") + '>Back</button><button type="button" class="ag-btn ag-btn--primary ag-btn--sm" id="stNext">' + (i === STEPS.length - 1 ? "Start again" : "Next step") + "</button></div></div>";
+    $("stPrev").addEventListener("click", function () { if (cur > 0) show(cur - 1, cur === 1 ? true : "stPrev"); });
+    $("stNext").addEventListener("click", function () { show((cur + 1) % STEPS.length, "stNext"); });
+    if (focus === true) tabs[i].focus();
+    else if (focus) $(focus).focus();
+    // Never jump past the opening story during initial rendering.
+    if (focus) tabs[i].scrollIntoView({ block: "nearest", inline: "nearest", behavior: reduce ? "auto" : "smooth" });
+  }
+  show(0, false);
+
+  /* ---------- RSVP specimen ---------- */
+  var rsvp = $("rsvp"), opts = rsvp.querySelectorAll("[role=radio]");
+  function pick(o) { opts.forEach(function (x) { var on = x === o; x.classList.toggle("is-on", on); x.setAttribute("aria-checked", String(on)); x.tabIndex = on ? 0 : -1; }); }
+  opts.forEach(function (o, i) {
+    o.tabIndex = i === 0 ? 0 : -1;
+    o.addEventListener("click", function () { pick(o); });
+    o.addEventListener("keydown", function (e) {
+      var d = (e.key === "ArrowRight" || e.key === "ArrowDown") ? 1 : (e.key === "ArrowLeft" || e.key === "ArrowUp") ? -1 : 0;
+      if (!d) return; e.preventDefault(); var n = opts[(i + d + opts.length) % opts.length]; pick(n); n.focus();
+    });
+  });
+
+  /* ---------- Evidence ---------- */
+  var api = E.apiTests || {}, web = E.webTests || {}, ds = E.designSystem || {}, ob = E.onboardingBrowser || {};
+  var cnt = function (o) { return (o.passed != null && o.total != null) ? o.passed + "/" + o.total : "n/a"; };
+  $("apiCount").textContent = cnt(api);
+  $("apiWhen").textContent = "Passed · " + stamp(api.checkedAt || E.checkedAt);
+  $("apiCmd").textContent = api.command || "";
+  $("webCount").textContent = cnt(web);
+  $("webWhen").textContent = "Passed · " + stamp(web.checkedAt);
+  $("webCmd").textContent = web.command || "";
+  $("staticStatus").textContent = ds.staticPassed ? "Pass" : "Not passing";
+  $("staticWhen").textContent = "Token fidelity and contrast · " + stamp(ds.checkedAt || E.checkedAt);
+  $("staticCmd").textContent = ds.command || "";
+  $("obSummary").textContent = ob.summary || "Focused pass: draft preservation, discard, save, reload, tour completion and reachable mobile controls.";
+  $("obLimit").textContent = ob.limitation || "Real reduced-motion CSS emulation was unavailable in the harness.";
+  $("obWhen").textContent = "Checked · " + stamp(ob.checkedAt);
+
+  /* ---------- Share ---------- */
+  var vis = String(pub.visibility || "restricted");
+  var isPrivate = vis !== "public";
+  $("visibility").textContent = isPrivate ? "Access restricted" : "Public";
+  $("shareUrl").textContent = APP.replace(/^https?:\/\//, "");
+  $("shareWarn").textContent = isPrivate
+    ? "Snapshot " + day(pub.checkedAt) + ": deployment visibility was " + vis + ". The link may ask you to sign in or request access."
+    : "Snapshot " + day(pub.checkedAt) + ": deployment was public. Access can change after this date.";
+  $("intLink").href = APP + "/integrations";
+  var INVITE = "I just saw Afterglow, a personal companion that turns the people you met at events into real follow-ups. Fictional demo, nothing is sent. Access may be restricted: " + APP;
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).catch(legacy);
+    return legacy();
+    function legacy() {
+      return new Promise(function (res, rej) {
+        var ta = $("copyFallback"), prev = document.activeElement;
+        ta.value = text; ta.focus(); ta.select();
+        var ok = false; try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        ta.value = ""; if (prev && prev.focus) prev.focus();
+        ok ? res() : rej(new Error("copy failed"));
+      });
+    }
+  }
+  function doCopy(text, label) {
+    copyText(text).then(function () { $("shareStatus").textContent = label + " copied. Sharing is still your choice."; })
+      .catch(function () { $("shareStatus").textContent = "Copy blocked. Select the address above to copy it manually."; });
+  }
+  $("copyUrl").addEventListener("click", function () { doCopy(APP, "Link"); });
+  $("copyInvite").addEventListener("click", function () { doCopy(INVITE, "Invite"); });
+
+  /* ---------- Local-only checklist ---------- */
+  var KEY = "afterglow-behind-the-glow-checklist";
+  var ITEMS = [
+    ["shared", "Share Afterglow with someone from tonight"],
+    ["notes", "Write one note about a person you met"],
+    ["follow", "Send one follow-up yourself"],
+    ["reply", "Mark it when they reply"],
+    ["next", "Pick your next event"]
+  ];
+  var state = {}, storageAvailable = true;
+  try {
+    var stored = JSON.parse(localStorage.getItem(KEY) || "{}");
+    if (stored && typeof stored === "object" && !Array.isArray(stored)) {
+      ITEMS.forEach(function (it) { state[it[0]] = stored[it[0]] === true; });
+    }
+  } catch (e) { storageAvailable = false; }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); storageAvailable = true; }
+    catch (e) { storageAvailable = false; }
+  }
+  var list = $("checklist");
+  ITEMS.forEach(function (it) {
+    var l = document.createElement("label"); l.className = "check";
+    var c = document.createElement("input"); c.type = "checkbox"; c.id = "chk-" + it[0]; c.checked = !!state[it[0]]; c.setAttribute("data-testid", "checkbox-" + it[0]);
+    c.addEventListener("change", function () { state[it[0]] = c.checked; save(); paint(); });
+    var s = document.createElement("span"); s.className = "type-label"; s.textContent = it[1];
+    l.appendChild(c); l.appendChild(s); list.appendChild(l);
+  });
+  function paint() {
+    var n = ITEMS.filter(function (it) { return state[it[0]]; }).length;
+    $("progFill").style.transform = "scaleX(" + (n / ITEMS.length) + ")";
+    $("progText").textContent = n + " of " + ITEMS.length + " done · " + (storageAvailable ? "stored only in this browser" : "not saved; kept until this page closes");
+  }
+  $("clearChecks").addEventListener("click", function () {
+    state = {}; try { localStorage.removeItem(KEY); storageAvailable = true; } catch (e) { storageAvailable = false; }
+    ITEMS.forEach(function (it) { $("chk-" + it[0]).checked = false; }); paint();
+  });
+  paint();
+
+  /* ---------- Reveal + active nav ---------- */
+  var revs = document.querySelectorAll(".reveal");
+  if (reduce || !("IntersectionObserver" in window)) { revs.forEach(function (r) { r.classList.add("is-in"); }); }
+  else {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }); }, { rootMargin: "0px 0px -10% 0px" });
+    revs.forEach(function (r) { io.observe(r); });
+    var navLinks = document.querySelectorAll(".nav a");
+    var so = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) navLinks.forEach(function (a) { a.setAttribute("aria-current", String(a.getAttribute("href") === "#" + e.target.id)); }); });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    ["story", "notes", "design", "evidence", "share"].forEach(function (id) { so.observe($(id)); });
+  }
+})();
+</script>
+</body>
+</html>

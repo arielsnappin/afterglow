@@ -1,0 +1,368 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+paths:
+  /demo/sample:
+    get:
+      operationId: getSyntheticSample
+      responses:
+        "200":
+          description: Luma-inspired synthetic CSV, not official export headers
+          content:
+            text/csv:
+              schema: { type: string }
+  /demo/preview:
+    post:
+      operationId: previewSyntheticImport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SyntheticInput" }
+      responses:
+        "200":
+          description: Validated preview, no workspace changes
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportResult" }
+  /demo/commit:
+    post:
+      operationId: commitSyntheticImport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SyntheticInput" }
+      responses:
+        "200":
+          description: Transactionally committed scenario or duplicate result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportResult" }
+  /demo/advance:
+    post:
+      operationId: advanceDemo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChapterInput" }
+      responses:
+        "200":
+          description: Updated workspace; stale repeat clicks do not advance twice
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Workspace" }
+  /demo/reset:
+    post:
+      operationId: resetDemo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ResetInput" }
+      responses:
+        "200":
+          description: Original browser workspace restored; demo edits removed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Workspace" }
+  /workspace:
+    get:
+      operationId: getWorkspace
+      summary: Load the isolated synthetic demo workspace
+      responses:
+        "200":
+          description: Workspace
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Workspace" }
+  /events/{id}:
+    patch:
+      operationId: updateEvent
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EventUpdate" }
+      responses:
+        "200":
+          description: Saved event
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Event" }
+  /people/{id}:
+    patch:
+      operationId: updatePerson
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PersonUpdate" }
+      responses:
+        "200":
+          description: Saved person
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Person" }
+  /preferences:
+    patch:
+      operationId: updatePreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Preferences" }
+      responses:
+        "200":
+          description: Saved preferences
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Preferences" }
+  /events/{id}/debrief:
+    post:
+      operationId: previewDebrief
+      summary: Suggest reviewable notes using simple name matching, not AI
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DebriefInput" }
+      responses:
+        "200":
+          description: Unsaved suggestions for user review
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DebriefPreview" }
+  /people/{id}/draft:
+    post:
+      operationId: suggestDraft
+      summary: Create a transparent template-based draft or brainstorming suggestion
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DraftInput" }
+      responses:
+        "200":
+          description: Editable suggestion, not automatically saved or sent
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DraftSuggestion" }
+  /summary:
+    get:
+      operationId: getSummary
+      responses:
+        "200":
+          description: Computed follow-up summary
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Summary" }
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  schemas:
+    Event:
+      type: object
+      required: [id, title, date, time, location, host, description, kind, source, tags, debrief, color, attendanceLabel]
+      properties:
+        startAt: { type: string }
+        endAt: { type: string }
+        timezone: { type: string }
+        selfCheckedInAt: { type: string }
+        scenarioDebrief: { type: string }
+        id: { type: string }
+        title: { type: string }
+        date: { type: string }
+        time: { type: string }
+        location: { type: string }
+        host: { type: string }
+        description: { type: string }
+        kind: { type: string, enum: [past, upcoming] }
+        source: { type: string }
+        tags: { type: array, items: { type: string } }
+        debrief: { type: string }
+        color: { type: string }
+        attendanceLabel: { type: string }
+    EventUpdate:
+      type: object
+      required: [debrief]
+      properties:
+        debrief: { type: string, maxLength: 12000 }
+    Person:
+      type: object
+      required: [id, name, role, company, initials, color, bio, interests, eventIds, met, notes, evidence, commitment, status, draft, nextAction, dueDate, dismissed, source, linkedinUrl]
+      properties:
+        sourceUserId: { type: string }
+        email: { type: string }
+        sharedEventIds: { type: array, items: { type: string } }
+        id: { type: string }
+        name: { type: string }
+        role: { type: string }
+        company: { type: string }
+        initials: { type: string }
+        color: { type: string }
+        bio: { type: string }
+        interests: { type: array, items: { type: string } }
+        eventIds: { type: array, items: { type: string } }
+        met: { type: boolean }
+        notes: { type: string }
+        evidence: { type: array, items: { type: string } }
+        commitment: { type: string }
+        status: { type: string, enum: [suggested, saved, contacted, replied] }
+        draft: { type: string }
+        nextAction: { type: string }
+        dueDate: { type: string }
+        dismissed: { type: boolean }
+        source: { type: string }
+        linkedinUrl: { type: ["string", "null"] }
+    PersonUpdate:
+      type: object
+      properties:
+        met: { type: boolean }
+        notes: { type: string, maxLength: 12000 }
+        commitment: { type: string, maxLength: 2000 }
+        status: { type: string, enum: [suggested, saved, contacted, replied] }
+        draft: { type: string, maxLength: 12000 }
+        nextAction: { type: string, maxLength: 2000 }
+        dueDate: { type: string, maxLength: 10 }
+        dismissed: { type: boolean }
+    Preferences:
+      type: object
+      required: [goal, interests]
+      properties:
+        goal: { type: string, minLength: 1, maxLength: 500 }
+        interests: { type: array, maxItems: 20, items: { type: string, maxLength: 80 } }
+    Workspace:
+      type: object
+      required: [events, people, preferences, isDemo]
+      properties:
+        journey: { $ref: "#/components/schemas/DemoJourney" }
+        memberships: { type: array, items: { $ref: "#/components/schemas/GuestMembership" } }
+        events: { type: array, items: { $ref: "#/components/schemas/Event" } }
+        people: { type: array, items: { $ref: "#/components/schemas/Person" } }
+        preferences: { $ref: "#/components/schemas/Preferences" }
+        isDemo: { type: boolean }
+    SyntheticInput:
+      type: object
+      required: [source]
+      properties:
+        source: { type: string, enum: [provider, csv] }
+        csv: { type: string, maxLength: 48000 }
+    ChapterInput:
+      type: object
+      required: [chapter]
+      properties:
+        chapter: { type: integer, minimum: 0, maximum: 7 }
+    ResetInput:
+      type: object
+      required: [confirm]
+      properties:
+        confirm: { type: boolean, enum: [true] }
+    ImportResult:
+      type: object
+      required: [eventCount, peopleCount, guestCount, startDate, endDate, duplicate, committed, stages]
+      properties:
+        eventCount: { type: integer }
+        peopleCount: { type: integer }
+        guestCount: { type: integer }
+        startDate: { type: string }
+        endDate: { type: string }
+        duplicate: { type: boolean }
+        committed: { type: boolean }
+        stages: { type: array, items: { type: string } }
+    DemoJourney:
+      type: object
+      required: [scenario, chapter, today, title, changes, windowDays]
+      properties:
+        scenario: { type: string }
+        chapter: { type: integer }
+        today: { type: string }
+        title: { type: string }
+        changes: { type: string }
+        windowDays: { type: integer }
+    GuestMembership:
+      type: object
+      required: [eventId, personId, guestId, ticketId, approvalStatus, registeredAt, checkedInAt]
+      properties:
+        eventId: { type: string }
+        personId: { type: string }
+        guestId: { type: string }
+        ticketId: { type: string }
+        approvalStatus: { type: string, enum: [approved, declined, waitlisted] }
+        registeredAt: { type: string }
+        checkedInAt: { type: string }
+    DebriefInput:
+      type: object
+      required: [text]
+      properties:
+        text: { type: string, minLength: 1, maxLength: 12000 }
+    DebriefCandidate:
+      type: object
+      required: [personId, name, notes]
+      properties:
+        personId: { type: string }
+        name: { type: string }
+        notes: { type: string }
+    DebriefPreview:
+      type: object
+      required: [candidates, explanation]
+      properties:
+        candidates: { type: array, items: { $ref: "#/components/schemas/DebriefCandidate" } }
+        explanation: { type: string }
+    DraftInput:
+      type: object
+      required: [mode]
+      properties:
+        mode: { type: string, enum: [followup, idea, invite] }
+    DraftSuggestion:
+      type: object
+      required: [text, explanation]
+      properties:
+        text: { type: string }
+        explanation: { type: string }
+    Summary:
+      type: object
+      required: [eventsAttended, peopleMet, openFollowups, conversationsStarted, dueCount]
+      properties:
+        eventsAttended: { type: integer }
+        peopleMet: { type: integer }
+        openFollowups: { type: integer }
+        conversationsStarted: { type: integer }
+        dueCount: { type: integer }
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+

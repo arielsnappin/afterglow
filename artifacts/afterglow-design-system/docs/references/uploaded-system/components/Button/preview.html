@@ -1,0 +1,29 @@
+<!-- @dsCard group="Actions" height=200 subtitle="Pill buttons with a bouncy press" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Button — preview</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var A = window.Afterglow, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', null,
+      h('div', { className: 'ag-demo' },
+        h(A.Button, { icon: '🎉' }, "I'm going"),
+        h(A.Button, { variant: 'secondary' }, 'Maybe'),
+        h(A.Button, { variant: 'zap' }, 'Share invite'),
+        h(A.Button, { variant: 'ghost' }, 'Not now')
+      ),
+      h('div', { className: 'ag-demo', style: { paddingTop: 0 } },
+        h(A.Button, { size: 'lg' }, 'Send the invite'),
+        h(A.Button, { variant: 'sun' }, 'Add to calendar'),
+        h(A.Button, { variant: 'sky' }, 'Message'),
+        h(A.Button, { variant: 'grape' }, 'Plus-one'),
+        h(A.Button, { size: 'sm', variant: 'secondary' }, 'Edit'),
+        h(A.Button, { disabled: true }, 'RSVPs closed')
+      )
+    )
+  );
+</script>
+</body>
+</html>

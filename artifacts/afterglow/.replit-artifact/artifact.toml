@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Afterglow — Event Follow-up"
+description = "A personal event follow-up app for turning conversations into meaningful relationships, with debriefs, thoughtful outreach and preparation for the next event. Starts with clearly labeled synthetic data."
+version = "1.0.0"
+id = "artifacts/afterglow"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24338
+
+[services.development]
+run = "pnpm --filter @workspace/afterglow run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/afterglow", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/afterglow/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24338"
+BASE_PATH = "/"

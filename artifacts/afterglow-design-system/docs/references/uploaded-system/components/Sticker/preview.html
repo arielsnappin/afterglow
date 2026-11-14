@@ -1,0 +1,20 @@
+<!-- @dsCard group="Social" height=100 subtitle="Tilted, outlined, retro" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Sticker — preview</title></head>
+<body>
+<div id="root" class="ag-demo" style="gap:20px"></div>
+<script>
+  var A = window.Afterglow, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null,
+      h(A.Sticker, { tone: 'zap' }, 'New'),
+      h(A.Sticker, { tone: 'pop', tilt: 5 }, 'Hosting'),
+      h(A.Sticker, { tone: 'sun', tilt: -7 }, '🔥 Hot'),
+      h(A.Sticker, { tone: 'sky', tilt: 3 }, '2 spots left'),
+      h(A.Sticker, { tone: 'grape', tilt: -2 }, 'Plus-ones ok')
+    )
+  );
+</script>
+</body>
+</html>

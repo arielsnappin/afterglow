@@ -1,0 +1,18 @@
+<!-- @dsCard group="Social" height=150 subtitle="Who's in" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>AvatarStack — preview</title></head>
+<body>
+<div id="root" class="ag-demo ag-demo--col" style="gap:16px"></div>
+<script>
+  var A = window.Afterglow, h = React.createElement;
+  var people = [{ name: 'Mika Tan' }, { name: 'Jo Rivera' }, { name: 'Sam Okafor' }, { name: 'Priya N' }, { name: 'Lee Park' }, { name: 'Dee' }];
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null,
+      h(A.AvatarStack, { people: people, total: 24, caption: '24 going' }),
+      h(A.AvatarStack, { people: people.slice(0, 3), size: 'sm', caption: 'Mika, Jo & Sam are in' })
+    )
+  );
+</script>
+</body>
+</html>

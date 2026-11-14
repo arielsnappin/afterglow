@@ -1,0 +1,54 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Afterglow</title>
+<style>
+  html, body { margin:0; height:100%; }
+  body { background:var(--bg); background-image:none; color:var(--ink); font-family:var(--font-body); overflow:hidden; }
+  .cover { position:relative; width:960px; height:288px; overflow:hidden; }
+  .art { position:absolute; top:0; left:480px; width:480px; height:288px; overflow:hidden; }
+  .art svg { display:block; width:480px; height:288px; }
+  .pop { fill:var(--pop); }
+  .zap { fill:var(--zap); }
+  .sun { fill:var(--sun); }
+  .grape { fill:var(--grape); }
+  .sky { fill:var(--sky); }
+  .cut { fill:var(--bg); }
+  .slab { rx:var(--radius-xl); }
+  .card { rx:var(--radius-lg); }
+  .words { position:absolute; left:var(--space-6); bottom:var(--space-6); max-width:440px; }
+  .name { margin:0; font-family:var(--font-display); font-size:80px; line-height:.92; font-weight:800; letter-spacing:-.035em; color:var(--ink); }
+  .tag { margin:var(--space-2) 0 0 4px; font-size:14px; line-height:20px; color:var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      pop 152×248 slab bled off the top (the hero, largest) · zap 176×72 pill · sun disc r60 · grape 168×136 bled off the right edge · sky disc r20 once — ≈38% of 960×288
+  arrangement one tall pop slab with neon satellites tumbling right, like stickers slapped on a flyer; space-6 gutter off the slab
+  pattern     discs, from "Anything tappable is a pill… nothing has square corners": a space-6-pitch grid of 8px dots cut into the slab in bg, and a short row cut into grape
+  scales      sides in space-2 multiples; pitch space-6; corners radius-xl (slab), radius-lg (grape), pill rx = half height (36), discs radius-pill
+-->
+<rect class="pop slab" x="24" y="-32" width="152" height="248" rx="32"/>
+<rect class="zap" x="200" y="24" width="176" height="72" rx="36"/>
+<circle class="sky" cx="416" cy="60" r="20"/>
+<circle class="sun" cx="260" cy="196" r="60"/>
+<rect class="grape card" x="336" y="128" width="168" height="136" rx="24"/>
+<circle class="cut" cx="64" cy="40" r="4"/><circle class="cut" cx="88" cy="40" r="4"/><circle class="cut" cx="112" cy="40" r="4"/><circle class="cut" cx="136" cy="40" r="4"/>
+<circle class="cut" cx="64" cy="64" r="4"/><circle class="cut" cx="88" cy="64" r="4"/><circle class="cut" cx="112" cy="64" r="4"/>
+<circle class="cut" cx="64" cy="88" r="4"/><circle class="cut" cx="88" cy="88" r="4"/>
+<circle class="cut" cx="64" cy="112" r="4"/>
+<circle class="cut" cx="368" cy="232" r="4"/><circle class="cut" cx="392" cy="232" r="4"/><circle class="cut" cx="416" cy="232" r="4"/><circle class="cut" cx="440" cy="232" r="4"/>
+</svg>
+</div>
+<div class="words">
+<h1 class="name">Afterglow</h1>
+<p class="tag">Loud, warm, and made for showing up.</p>
+</div>
+</div>
+</body>
+</html>

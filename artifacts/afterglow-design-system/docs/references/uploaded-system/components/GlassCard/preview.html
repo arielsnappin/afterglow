@@ -1,0 +1,27 @@
+<!-- @dsCard group="Surfaces" height=250 subtitle="Solid color blocks lead, glass supports" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>GlassCard — preview</title></head>
+<body>
+<div id="root" class="ag-demo" style="align-items:stretch"></div>
+<script>
+  var A = window.Afterglow, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null,
+      h(A.GlassCard, { tone: 'pop', slab: true, style: { width: 240 } },
+        h('h3', null, "You're in 🎉"),
+        h('p', null, 'Rooftop szn · Sat 8pm')
+      ),
+      h('div', { style: { display: 'flex', flexDirection: 'column', gap: 12 } },
+        h(A.GlassCard, { tone: 'zap', compact: true, style: { width: 180 } }, h('h3', null, '24 going')),
+        h(A.GlassCard, { tone: 'sun', compact: true, style: { width: 140 } }, h('h3', null, '6 maybe'))
+      ),
+      h(A.GlassCard, { style: { width: 260 } },
+        h('h3', null, 'The plan ✨'),
+        h('p', null, 'Dinner at 7, then karaoke till they kick us out. Bring your best ballad.')
+      )
+    )
+  );
+</script>
+</body>
+</html>

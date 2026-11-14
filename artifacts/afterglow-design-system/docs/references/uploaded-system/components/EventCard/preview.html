@@ -1,0 +1,26 @@
+<!-- @dsCard group="Surfaces" height=470 subtitle="Poster, details, who's going" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>EventCard — preview</title></head>
+<body>
+<div id="root" class="ag-demo" style="align-items:flex-start"></div>
+<script>
+  var A = window.Afterglow, h = React.createElement;
+  var crew = [{ name: 'Mika Tan' }, { name: 'Jo Rivera' }, { name: 'Sam Okafor' }, { name: 'Priya N' }, { name: 'Lee' }];
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null,
+      h(A.EventCard, {
+        tone: 'pop', emoji: '🌇', sticker: 'Hosting',
+        title: 'Rooftop szn', date: 'Sat, Jun 14', time: '8pm', location: "Mika's roof, Bushwick", host: 'Ariel',
+        going: crew, goingCount: 24
+      }, h(A.Button, { size: 'sm', icon: '🎉' }, "I'm going"), h(A.Button, { size: 'sm', variant: 'secondary' }, 'Share')),
+      h(A.EventCard, {
+        tone: 'sky', emoji: '🎤', sticker: '🔥 Hot', stickerTone: 'sun',
+        title: 'Karaoke night', date: 'Fri, Jun 20', time: '9:30pm', location: 'Gagopa, K-town', host: 'Jo',
+        going: crew.slice(0, 3)
+      })
+    )
+  );
+</script>
+</body>
+</html>

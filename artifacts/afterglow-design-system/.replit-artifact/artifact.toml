@@ -1,0 +1,19 @@
+kind = "design-system"
+previewPath = "/afterglow-design-system/"
+title = "Afterglow Design System"
+description = "A quiet, approachable consumer design system for meaningful personal follow-ups, with light and dark themes, reusable components and fictional product compositions."
+version = "1.0.0"
+id = "artifacts/afterglow-design-system"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/afterglow-design-system/" ]
+localPort = 18379
+
+[services.development]
+run = "pnpm --filter @workspace/afterglow-design-system run dev"
+
+[services.env]
+PORT = "18379"
+BASE_PATH = "/afterglow-design-system/"

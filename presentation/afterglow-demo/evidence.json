@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-11-14T22:42:00Z",
+  "apiTests": {
+    "passed": 13,
+    "total": 13,
+    "command": "pnpm --filter @workspace/api-server test",
+    "checkedAt": "2026-11-14T21:53:33Z"
+  },
+  "designSystem": {
+    "staticPassed": true,
+    "command": "pnpm --filter @workspace/afterglow-design-system run verify",
+    "checkedAt": "2026-11-14T21:53:33Z"
+  },
+  "webTests": {
+    "passed": 14,
+    "total": 14,
+    "command": "pnpm --filter @workspace/afterglow test",
+    "checkedAt": "2026-11-14T22:36:00Z"
+  },
+  "onboardingBrowser": {
+    "checkedAt": "2026-11-14",
+    "summary": "Focused browser checks passed for unsaved input retention, discard confirmation, desktop Night out, mobile Day party, reachable controls and Escape focus return.",
+    "limitation": "Actual CSS reduced-motion emulation was unavailable. Rules were inspected, not browser-validated. This was not an exhaustive accessibility audit."
+  },
+  "publishedApp": {
+    "url": "https://afterglow-cornell-tech.replit.app",
+    "visibility": "private",
+    "checkedAt": "2026-11-14T22:42:00Z"
+  }
+}
